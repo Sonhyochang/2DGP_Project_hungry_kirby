@@ -11,7 +11,7 @@ class Kirby:
         self.action = 9
         self.jump = False
         self.high = True
-        self.image = load_image('kirby_animation_sheet.png')
+        self.image = load_image('kirby_animation_sheet2.png')
 
     def update(self):
         #pass
@@ -63,16 +63,16 @@ class Kirby:
 
     def draw(self):
         if not self.jump and self.dir == 0:
-            self.image.clip_draw(256 + self.frame * 21 , self.action * 34, 20, 34, self.x, self.y,50,50)
+            self.image.clip_draw(79 + self.frame * 23 , self.action * 34, 23, 34, self.x, self.y,50,50)
         elif not self.jump and self.dir > 0:
-            self.image.clip_draw(256 + self.frame * 21 , self.action * 34, 20, 34, self.x, self.y,50,50)
+            self.image.clip_draw(79 + self.frame * 23 , self.action * 34, 23, 34, self.x, self.y,50,50)
         elif not self.jump and self.dir < 0:
-            self.image.clip_composite_draw(256 + self.frame * 21, self.action * 34, 20, 34, 0, 'h', self.x, self.y, 50, 50)
+            self.image.clip_composite_draw(79 + self.frame * 23, self.action * 34, 23, 34, 0, 'h', self.x, self.y, 50, 50)
 
         if self.jump and self.dir2 == 0:
-            self.image.clip_draw(716 + self.frame * 22, self.action * 34, 21, 34, self.x, self.y, 50, 50)
+            self.image.clip_draw(644 + self.frame * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
         elif self.dir2 > 0:
-            self.image.clip_draw(716 + self.frame * 22 , self.action * 34, 21, 34, self.x, self.y,50,50)
+            self.image.clip_draw(644 + self.frame * 25 , self.action * 34, 24, 34, self.x, self.y,50,50)
 
 
 def handle_events():
