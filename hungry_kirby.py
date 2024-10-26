@@ -33,8 +33,12 @@ class Kirby:
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_RIGHT:
                 self.dir += 1
+                if self.jump:
+                    self.dir2 = 1
             elif event.key == SDLK_LEFT:
                 self.dir -= 1
+                if self.jump:
+                    self.dir2 = -1
             elif event.key == SDLK_UP:
                 if self.dir < 0:
                     self.dir2 = -1
@@ -95,14 +99,20 @@ class Kirby:
 
         if self.jump:
             if self.dir2 < 0:
-                self.image.clip_composite_draw(644 + self.frame * 25, self.action * 34, 24, 34, 0, 'h', self.x, self.y,50, 50)
+                if self.space_jump:
+                    self.image.clip_composite_draw(474 + self.frame * 30, self.action * 34 - 34, 30, 34, 0, 'h', self.x,self.y, 50, 50)
+                else:
+                    self.image.clip_composite_draw(644 + self.frame * 25, self.action * 34, 24, 34, 0, 'h', self.x, self.y,50, 50)
             elif self.dir2 == 0:
                 if self.space_jump:
                     self.image.clip_draw(474 + self.frame * 30 ,self.action * 34 - 34, 30, 34, self.x, self.y,50,50)
                 else:
                     self.image.clip_draw(644 + self.frame * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
             elif self.dir2 > 0:
-                self.image.clip_draw(644 + self.frame * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
+                if self.space_jump:
+                    self.image.clip_draw(474 + self.frame * 30 ,self.action * 34 - 34, 30, 34, self.x, self.y,50,50)
+                else:
+                    self.image.clip_draw(644 + self.frame * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
 
 
 def handle_events():
