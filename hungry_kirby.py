@@ -10,12 +10,18 @@ class Kirby:
         self.dir2 = 0
         self.action = 9
         self.jump = False
-        self.high = True
+        self.high = False
+        self.space_jump = False
+        self.slow_fall = False
+
         self.image = load_image('kirby_animation_sheet2.png')
 
     def update(self):
         #pass
-        self.frame = (self.frame + 1) % 9
+        if self.space_jump:
+            self.frame = (self.frame +1) % 6
+        else:
+            self.frame = (self.frame + 1) % 9
         self.move_limit()
         self.jump_logic()
 
@@ -30,6 +36,9 @@ class Kirby:
                 self.dir2 = 1
                 self.jump = True
                 self.high = True
+            elif event.key == SDLK_SPACE:
+                self.space_jump = True
+                self.slow_fall = True
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 self.dir -= 1
@@ -37,6 +46,9 @@ class Kirby:
                 self.dir += 1
             elif event.key == SDLK_UP:
                 self.dir2 = 0
+            elif event.key == SDLK_SPACE:
+                self.space_jump = False
+                self.slow_fall = False
 
     def move_limit(self):
         if 800 > self.x > 0:
@@ -53,11 +65,17 @@ class Kirby:
                 if self.y >= 250:
                     self.high = False
             else:
-                self.y -= 20
+                if self.space_jump:
+                    self.y += 5
+                elif self.slow_fall:
+                    self.y -= 5
+                else:
+                    self.y -= 20
 
             if self.y <= 90:
                 self.y = 90
                 self.jump = False
+                self.space_jump = False
 
 
 
@@ -70,9 +88,12 @@ class Kirby:
             self.image.clip_composite_draw(79 + self.frame * 23, self.action * 34, 23, 34, 0, 'h', self.x, self.y, 50, 50)
 
         if self.jump and self.dir2 == 0:
-            self.image.clip_draw(644 + self.frame * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
+            if self.space_jump:
+                self.image.clip_draw(474 + self.frame * 30 ,self.action * 34 - 34, 30, 34, self.x, self.y,50,50)
+            else:
+                self.image.clip_draw(644 + self.frame * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
         elif self.dir2 > 0:
-            self.image.clip_draw(644 + self.frame * 25 , self.action * 34, 24, 34, self.x, self.y,50,50)
+                self.image.clip_draw(644 + self.frame * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
 
 
 def handle_events():
