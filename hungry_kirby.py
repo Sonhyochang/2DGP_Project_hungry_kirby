@@ -1,8 +1,17 @@
+
+
 from pico2d import*
 import random
 
-from pygame.display import is_fullscreen
+Back_WIDTH, Back_HEIGHT = 1024, 768
 
+class Background_kirby:
+    def __init__(self):
+        self.image = load_image('kirby_background_stage1.png')
+    def draw(self):
+        self.image.clip_draw(0,0,512,192,512,384,1024,768)
+    def update(self):
+        pass
 
 class Kirby:
     def __init__(self):
@@ -131,10 +140,14 @@ def reset_world():
     global running
     global kirby
     global world
+    global background
 
 
     running = True
     world = []
+
+    background = Background_kirby()
+    world.append(background)
 
     kirby = Kirby()
     world.append(kirby)
@@ -150,7 +163,7 @@ def render_world():
         o.draw()
     update_canvas()
 
-open_canvas()
+open_canvas(Back_WIDTH,Back_HEIGHT)
 reset_world()
 # game loop
 while running:
