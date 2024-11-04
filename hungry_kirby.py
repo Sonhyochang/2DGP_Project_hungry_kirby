@@ -4,10 +4,31 @@ from pico2d import*
 
 from kirby import Kirby
 
-from kirby_background import Background_kirby
+# from kirby_background import Background_kirby
 
 Back_WIDTH, Back_HEIGHT = 1024, 768
 
+class Background_kirby:
+    def __init__(self):
+        global kirby
+        self.kbg_x = 1000
+        self.image = load_image('kirby_background_stage1.png')
+    def draw(self):
+        self.image.draw(self.kbg_x, 384, 2000, 768)
+        if kirby.x > 850:
+            self.image.draw(self.kbg_x,384,2000,768)
+            if self.kbg_x > 200:
+                self.kbg_x -= 3
+            elif self.kbg_x <= 200:
+                self.kbg_x += 0
+        elif kirby.x <= 250:
+            self.image.draw(self.kbg_x, 384, 2000, 768)
+            if self.kbg_x < 1000:
+                self.kbg_x += 3
+            elif self.kbg_x >= 1000:
+                self.kbg_x += 0
+    def update(self):
+        pass
 
 def handle_events():
     global running

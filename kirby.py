@@ -58,9 +58,9 @@ class Kirby:
                 self.slow_fall = False
 
     def move_limit(self):
-        if 800 > self.x > 0:
+        if 1024 > self.x > 0:
             self.x += self.dir * 10
-        elif self.x >= 800:
+        elif self.x >= 1024:
             self.x = self.x - 10
         elif self.x <= 0:
             self.x = self.x + 10
