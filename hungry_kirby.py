@@ -12,6 +12,7 @@ class Background_kirby:
     def __init__(self):
         global kirby
         self.kbg_x = 1000
+        self.image_map = load_image('level1-1.png')
         self.image = load_image('kirby_background_stage1.png')
     def draw(self):
         self.image.draw(self.kbg_x, 384, 2000, 768)
@@ -27,6 +28,7 @@ class Background_kirby:
                 self.kbg_x += 3
             elif self.kbg_x >= 1000:
                 self.kbg_x += 0
+        self.image_map.draw(self.kbg_x, 180, 3000, 384)
     def update(self):
         pass
 

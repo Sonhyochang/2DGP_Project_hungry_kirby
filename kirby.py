@@ -1,9 +1,10 @@
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_SPACE, SDL_KEYUP
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_SPACE, SDL_KEYUP, SDLK_e
+
 
 class Kirby:
     def __init__(self):
-        self.x, self.y = 400, 90
+        self.x, self.y = 400, 125
         self.frame = 0
         self.dir = 0
         self.dir2 = 0
@@ -14,6 +15,7 @@ class Kirby:
         self.high = False
         self.space_jump = False
         self.slow_fall = False
+        self.vac_mode = False
 
         self.image = load_image('kirby_animation_sheet2.png')
 
@@ -21,9 +23,12 @@ class Kirby:
         # pass
         if self.space_jump:
             self.frame = (self.frame + 1) % 6
+        elif self.vac_mode:
+            self.frame = (self.frame + 1) % 5
         else:
             self.frame = (self.frame + 1) % 9
-        #self.frame = 0
+
+        #self.frame = 3
         self.move_limit()
         self.jump_logic()
 
@@ -49,6 +54,8 @@ class Kirby:
             elif event.key == SDLK_SPACE:
                 self.space_jump = True
                 self.slow_fall = True
+            elif event.key == SDLK_e:
+                self.vac_mode = True
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 self.dir = 0
@@ -59,6 +66,8 @@ class Kirby:
             elif event.key == SDLK_SPACE:
                 self.space_jump = False
                 self.slow_fall = False
+            elif event.key == SDLK_e:
+                self.vac_mode = False
 
     def move_limit(self):
         if 1024 > self.x > 0:
@@ -82,21 +91,23 @@ class Kirby:
                 else:
                     self.y -= 20
 
-            if self.y <= 90:
-                self.y = 90
+            if self.y <= 125:
+                self.y = 125
                 self.jump = False
                 self.space_jump = False
 
     def draw(self):
-        if not self.jump and self.dir == 0:
-            if self.kirby_face_dir == 1:
-                self.image.clip_draw(199 + self.frame * 28, self.action * 34 - 309, 28, 34, self.x, self.y,60, 60)
-            elif self.kirby_face_dir == -1:
-                self.image.clip_composite_draw(199 + self.frame * 28, self.action * 34 -309, 28, 34, 0, 'h', self.x, self.y, 60,60)
-        elif not self.jump and self.dir == 1:
-            self.image.clip_draw(79 + self.frame * 23, self.action * 34, 23, 34, self.x, self.y, 50, 50)
-        elif not self.jump and self.dir == -1:
-            self.image.clip_composite_draw(79 + self.frame * 23, self.action * 34, 23, 34, 0, 'h', self.x, self.y, 50, 50)
+        if not self.jump and not self.vac_mode:
+            if self.dir == 0:
+                if self.kirby_face_dir == 1:
+                    self.image.clip_draw(199 + self.frame * 28, self.action * 34 - 309, 28, 34, self.x, self.y,60, 60)
+                elif self.kirby_face_dir == -1:
+                    self.image.clip_composite_draw(199 + self.frame * 28, self.action * 34 -309, 28, 34, 0, 'h', self.x, self.y, 60,60)
+            elif self.dir == 1:
+                self.image.clip_draw(79 + self.frame * 23, self.action * 34, 23, 34, self.x, self.y, 50, 50)
+            elif self.dir == -1:
+                self.image.clip_composite_draw(79 + self.frame * 23, self.action * 34, 23, 34, 0, 'h', self.x, self.y, 50, 50)
+
         if self.jump:
             if self.dir2 < 0:
                 if self.space_jump:
@@ -115,3 +126,14 @@ class Kirby:
                     self.image.clip_draw(474 + self.frame * 30, self.action * 34 - 34, 30, 34, self.x, self.y, 50, 50)
                 else:
                     self.image.clip_draw(644 + self.frame * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
+
+        if self.vac_mode:
+            if self.dir == 0:
+                if self.kirby_face_dir == 1:
+                    self.image.clip_draw(815 + self.frame * 30, self.action * 34 - 175, 30, 34, self.x, self.y, 55, 55)
+                elif self.kirby_face_dir == -1:
+                    self.image.clip_composite_draw(815 + self.frame * 30, self.action * 34 - 175, 30, 34, 0, 'h', self.x, self.y, 55, 55)
+            elif self.dir == 1:
+                self.vac_mode = False
+            elif self.dir == -1:
+                self.vac_mode = False
