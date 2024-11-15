@@ -2,6 +2,7 @@ from pico2d import load_image, get_time
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_SPACE, SDL_KEYUP, SDLK_e
 
 
+
 class Kirby:
     def __init__(self):
         self.x, self.y = 400, 125
