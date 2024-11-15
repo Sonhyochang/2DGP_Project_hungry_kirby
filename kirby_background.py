@@ -1,6 +1,5 @@
-from pico2d import load_image
+from pico2d import load_image, draw_rectangle
 
-from kirby import Kirby
 
 class Background_kirby:
     def __init__(self,kirby):
@@ -23,5 +22,9 @@ class Background_kirby:
             elif self.kbg_x >= 1000:
                 self.kbg_x += 0
         self.image_map.draw(self.kbg_x, 180, 3000, 384)
+        draw_rectangle(*self.get_bb())
     def update(self):
         pass
+
+    def get_bb(self):
+        return 0 , 0, 2000 , 125

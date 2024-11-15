@@ -1,7 +1,16 @@
-from pico2d import load_image, get_time
+import time
+
+from pico2d import load_image, get_time, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_SPACE, SDL_KEYUP, SDLK_e
 
+import kirby_game_framework
+import kirby_world
 
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 class Kirby:
     def __init__(self):
@@ -21,7 +30,6 @@ class Kirby:
         self.image = load_image('kirby_animation_sheet2.png')
 
     def update(self):
-        # pass
 
         if self.space_jump:
               self.frame = (self.frame + 1) % 6
@@ -99,6 +107,7 @@ class Kirby:
                 self.space_jump = False
 
     def draw(self):
+        draw_rectangle(*self.get_bb())
         if not self.jump and not self.vac_mode:
             if self.dir == 0:
                 if self.kirby_face_dir == 1:
@@ -139,3 +148,5 @@ class Kirby:
                 self.vac_mode = False
             elif self.dir == -1:
                 self.vac_mode = False
+    def get_bb(self):
+        return self.x - 27, self.y - 24, self.x + 27, self.y + 24
