@@ -2,6 +2,7 @@
 
 from pico2d import*
 
+import kirby_world
 from kirby import Kirby
 
 # from kirby_background import Background_kirby
@@ -56,29 +57,29 @@ def reset_world():
     world = []
 
     background = Background_kirby()
-    world.append(background)
+    kirby_world.add_object(background, 1)
 
     kirby = Kirby()
-    world.append(kirby)
+    kirby_world.add_object(kirby,1)
 
 def update_world():
-    for o in world:
-        o.update()
+    kirby_world.update()
     pass
 
 def render_world():
     clear_canvas()
-    for o in world:
-        o.draw()
+    kirby_world.render()
     update_canvas()
 
 open_canvas(Back_WIDTH,Back_HEIGHT)
 reset_world()
 # game loop
+
 while running:
     handle_events()
     update_world()
     render_world()
+
     delay(0.05)
 # finalization code
 close_canvas()

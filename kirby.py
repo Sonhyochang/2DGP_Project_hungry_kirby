@@ -21,8 +21,9 @@ class Kirby:
 
     def update(self):
         # pass
+
         if self.space_jump:
-            self.frame = (self.frame + 1) % 6
+              self.frame = (self.frame + 1) % 6
         elif self.vac_mode:
             self.frame = (self.frame + 1) % 5
         else:
