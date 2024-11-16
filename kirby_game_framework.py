@@ -1,3 +1,4 @@
+import time
 from pico2d import delay
 
 def change_mode(mode):
@@ -33,11 +34,17 @@ def run(start_mode):
     stack = [start_mode]
     start_mode.init()
 
+
+    global frame_time
+    frame_time = 0.0
+    current_time = time.time()
     while running:
         stack[-1].handle_events()
         stack[-1].update()
         stack[-1].draw()
-        delay(0.05)
+        frame_time = time.time() - current_time
+        frame_rate = 1.0 / frame_time
+        current_time += frame_time
 
     while (len(stack) > 0):
         stack[-1].finish()
