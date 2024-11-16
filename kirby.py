@@ -108,9 +108,9 @@ class Kirby:
                     self.high = False
             else:
                 if self.space_jump:
-                    self.y += 5
+                    self.y += (JUMP_SPEED_PPS / 3) * kirby_game_framework.frame_time
                 elif self.slow_fall:
-                    self.y -= 5
+                    self.y -= (JUMP_SPEED_PPS / 3) * kirby_game_framework.frame_time
                 else:
                     self.y -= JUMP_SPEED_PPS * kirby_game_framework.frame_time
 
