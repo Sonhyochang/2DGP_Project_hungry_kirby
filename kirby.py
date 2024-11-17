@@ -1,8 +1,8 @@
 import time
-
 from pico2d import load_image, get_time, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_SPACE, SDL_KEYUP, SDLK_e
 
+import ice_monster
 import kirby_game_framework
 import kirby_world
 
@@ -22,10 +22,11 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION_BASE = 9
 FRAMES_PER_ACTION_JUMP = 6
 FRAMES_PER_ACTION_VAC = 5
+FRAMES_PER_ACTION_DAMAGE = 10
 
 class Kirby:
     def __init__(self):
-        self.x, self.y = 400, 125
+        self.x, self.y = 800, 120
         self.frame = 0
         self.dir = 0
         self.dir2 = 0
@@ -37,6 +38,12 @@ class Kirby:
         self.space_jump = False
         self.slow_fall = False
         self.vac_mode = False
+        self.damage_mode = False
+        self.damage_start_time = 0
+        self.knockback_distance = 100
+        self.knockback_speed = 200
+        self.knockback_dir = 0
+        self.ice_monster = None
 
         self.image = load_image('kirby_animation_sheet2.png')
 
@@ -46,6 +53,15 @@ class Kirby:
               self.frame = (self.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * kirby_game_framework.frame_time) % 6
         elif self.vac_mode:
             self.frame = (self.frame + FRAMES_PER_ACTION_VAC * ACTION_PER_TIME * kirby_game_framework.frame_time) % 5
+        elif self.damage_mode:
+            self.frame = (self.frame + FRAMES_PER_ACTION_DAMAGE * ACTION_PER_TIME * kirby_game_framework.frame_time) % 10
+            knockback_per_frame = self.knockback_speed * kirby_game_framework.frame_time
+            if self.knockback_distance > 0:
+                self.x +=  self.knockback_dir * knockback_per_frame
+                self.knockback_distance -= knockback_per_frame
+
+            if time.time() - self.damage_start_time > 0.5:
+                self.damage_mode = False
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION_BASE * ACTION_PER_TIME * kirby_game_framework.frame_time) % 9
 
@@ -122,7 +138,7 @@ class Kirby:
 
     def draw(self):
         draw_rectangle(*self.get_bb())
-        if not self.jump and not self.vac_mode:
+        if not self.jump and not self.vac_mode and not self.damage_mode:
             if self.dir == 0:
                 if self.kirby_face_dir == 1:
                     self.image.clip_draw(199 + int(self.frame) * 28, self.action * 34 - 309, 28, 34, self.x, self.y,60, 60)
@@ -167,5 +183,34 @@ class Kirby:
                 self.vac_mode = False
             elif self.dir == -1:
                 self.vac_mode = False
+
+        if self.damage_mode:
+            if self.knockback_dir == 1:
+                self.image.clip_composite_draw(510 + int(self.frame) * 25, self.action * 34 - 309, 25, 34, 0, 'h',self.x,self.y,55,55)
+            elif self.knockback_dir == -1:
+                self.image.clip_draw(510 + int(self.frame) * 25, self.action * 34 - 309, 25, 34, self.x, self.y,55, 55)
+            #self.damage_mode = False
+
     def get_bb(self):
         return self.x - 27, self.y - 24, self.x + 27, self.y + 24
+
+    def handle_collision(self, group, other):
+        if group == 'kirby:map':
+            _,_,_,top = other.get_bb()
+            self.y = top + 24
+            self.jump = False
+            self.high = False
+            self.space_jump = False
+            print('collision')
+            print('kirby location : ')
+            print(self.x)
+
+        elif group == 'kirby:ice':
+            self.damage_mode = True
+            self.damage_start_time = time.time()
+            self.knockback_distance = 100
+            if other.x < self.x:
+                 self.knockback_dir = 1 # 우
+            else:
+                self.knockback_dir = -1 # 좌
+

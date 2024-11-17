@@ -4,6 +4,7 @@ import kirby_world
 import kirby_game_framework
 from kirby import Kirby
 from kirby_background import Background_kirby
+from ice_monster import Ice_Monster
 
 
 def handle_events():
@@ -19,18 +20,26 @@ def handle_events():
 def init():
     global kirby
     global background
+    global ice_monster
 
     kirby = Kirby()
     background = Background_kirby(kirby)
+    ice_monster = Ice_Monster(background)
 
     kirby_world.add_object(background, 1)
     kirby_world.add_object(kirby,1)
+    kirby_world.add_object(ice_monster, 1)
+
+    kirby_world.add_collision_pair('kirby:map', kirby, None)
+    kirby_world.add_collision_pair('kirby:map',None,background)
+    kirby_world.add_collision_pair('kirby:ice',kirby,ice_monster)
 
 def finish():
     kirby_world.clear()
 
 def update():
     kirby_world.update()
+    kirby_world.handle_collisions()
     pass
 
 def draw():
