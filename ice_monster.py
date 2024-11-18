@@ -52,6 +52,6 @@ class Ice_Monster:
 
     def handle_collision(self, group, other):
         if group == 'kirby:ice':
-            #kirby_world.remove_object(self)
+            kirby_world.remove_object(self)
             pass
 
