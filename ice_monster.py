@@ -50,6 +50,7 @@ class Ice_Monster:
     def get_bb(self):
         return self.x - 15, self.y - 15, self.x + 15, self.y + 15
 
+
     def handle_collision(self, group, other):
         if group == 'kirby:ice':
             kirby_world.remove_object(self)
