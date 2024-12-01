@@ -4,7 +4,10 @@ from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_SPACE, SDL_KE
 
 import ice_monster
 import kirby_game_framework
+import kirby_play_mode
 import kirby_world
+from boss_map import BossMap
+from ice_kirby import Ice_Kirby
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 PIXEL_PER_HEIGHT = (74.0 / 2.2)
@@ -23,15 +26,19 @@ FRAMES_PER_ACTION_BASE = 9
 FRAMES_PER_ACTION_JUMP = 6
 FRAMES_PER_ACTION_VAC = 5
 FRAMES_PER_ACTION_DAMAGE = 10
+FRAMES_PER_ACTION_ICE_RUN = 10
+FRAMES_PER_ACTION_ICE_IDLE = 2
 
 class Kirby:
     def __init__(self):
-        self.x, self.y = 800, 120
+        self.x, self.y = 400, 125
         self.frame = 0
         self.dir = 0
         self.dir2 = 0
         self.dir3 = 0
         self.action = 9
+        self.min_y = 125
+        self.max_y = 250
         self.kirby_face_dir = 1
         self.jump = False
         self.high = False
@@ -43,12 +50,12 @@ class Kirby:
         self.knockback_distance = 100
         self.knockback_speed = 200
         self.knockback_dir = 0
-        self.ice_monster = None
 
         self.image = load_image('kirby_animation_sheet2.png')
 
-    def update(self):
 
+
+    def update(self):
         if self.space_jump:
               self.frame = (self.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * kirby_game_framework.frame_time) % 6
         elif self.vac_mode:
@@ -68,6 +75,7 @@ class Kirby:
         #self.frame = 3
         self.move_limit()
         self.jump_logic()
+        self.map_up()
 
     def handle_event(self, event):
         if event.type == SDL_KEYDOWN:
@@ -120,7 +128,7 @@ class Kirby:
         if self.jump:
             if self.high:
                 self.y += JUMP_SPEED_PPS * kirby_game_framework.frame_time
-                if self.y >= 250:
+                if self.y >= self.max_y:
                     self.high = False
             else:
                 if self.space_jump:
@@ -130,11 +138,48 @@ class Kirby:
                 else:
                     self.y -= JUMP_SPEED_PPS * kirby_game_framework.frame_time
 
-            if self.y <= 125:
-                self.y = 125
+            if self.y <= self.min_y:
+                self.y = self.min_y
                 self.jump = False
                 self.space_jump = False
                 self.dir2 = 0
+
+    def map_up(self):
+        if kirby_play_mode.background.kbg_x - 890 < self.x <  kirby_play_mode.background.kbg_x - 752:
+            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
+                self.min_y = 150
+                self.max_y = 275
+                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
+                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
+        elif kirby_play_mode.background.kbg_x - 160 < self.x <  kirby_play_mode.background.kbg_x + 30:
+            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
+                self.min_y = 150
+                self.max_y = 275
+                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
+                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
+        elif kirby_play_mode.background.kbg_x + 25 < self.x <  kirby_play_mode.background.kbg_x + 140:
+            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
+                self.min_y = 230
+                self.max_y = 355
+                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
+                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
+        elif kirby_play_mode.background.kbg_x + 320 < self.x <  kirby_play_mode.background.kbg_x + 780:
+            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
+                self.min_y = 155
+                self.max_y = 280
+                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
+                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
+        elif kirby_play_mode.background.kbg_x + 780 < self.x <  kirby_play_mode.background.kbg_x + 850:
+            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
+                self.min_y = 300
+                self.max_y = 425
+                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
+                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
+        else:
+            if not self.jump:  # 점프 중이 아닐 때만 y값을 기본값으로 설정
+                self.y = 125
+                self.min_y = 125
+                self.max_y = 250
 
     def draw(self):
         draw_rectangle(*self.get_bb())
@@ -153,18 +198,18 @@ class Kirby:
             if self.dir2 == -1:
                 if self.space_jump:
                     self.image.clip_composite_draw(474 + int(self.frame) * 30, self.action * 34 - 34, 30, 34, 0, 'h', self.x,
-                                                   self.y, 50, 50)
+                                                       self.y, 50, 50)
                 else:
                     self.image.clip_composite_draw(644 + int(self.frame) * 25, self.action * 34, 24, 34, 0, 'h', self.x,
-                                                   self.y, 50, 50)
+                                                       self.y, 50, 50)
             elif self.dir2 == 0:
                 if self.space_jump:
                     if self.kirby_face_dir == 1:
                         self.image.clip_draw(474 + int(self.frame) * 30, self.action * 34 - 34, 30, 34, self.x, self.y, 50, 50)
                     elif self.kirby_face_dir == -1:
                         self.image.clip_composite_draw(474 + int(self.frame) * 30, self.action * 34 - 34, 30, 34, 0,
-                                                       'h', self.x,
-                                                       self.y, 50, 50)
+                                                           'h', self.x,
+                                                           self.y, 50, 50)
                 else:
                     self.image.clip_draw(644 + int(self.frame) * 25, self.action * 34, 24, 34, self.x, self.y, 50, 50)
             elif self.dir2 == 1:
@@ -189,22 +234,17 @@ class Kirby:
                 self.image.clip_composite_draw(510 + int(self.frame) * 25, self.action * 34 - 309, 25, 34, 0, 'h',self.x,self.y,55,55)
             elif self.knockback_dir == -1:
                 self.image.clip_draw(510 + int(self.frame) * 25, self.action * 34 - 309, 25, 34, self.x, self.y,55, 55)
-            #self.damage_mode = False
+                #self.damage_mode = False
 
     def get_bb(self):
-        return self.x - 27, self.y - 24, self.x + 27, self.y + 24
+            return self.x - 27, self.y - 24, self.x + 27, self.y + 24
 
     def handle_collision(self, group, other):
         if group == 'kirby:map':
-            _,_,_,top = other.get_bb()
-            self.y = top + 24
-            self.jump = False
-            self.high = False
-            self.space_jump = False
-            print('collision')
-            print('kirby location : ')
-            print(self.x)
-
+            self.x = 400
+            self.y = 175
+            self.min_y = 175
+            self.max_y = 350
         elif group == 'kirby:ice':
             self.damage_mode = True
             self.damage_start_time = time.time()
@@ -213,4 +253,7 @@ class Kirby:
                  self.knockback_dir = 1 # 우
             else:
                 self.knockback_dir = -1 # 좌
+
+
+
 

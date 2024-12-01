@@ -30,6 +30,14 @@ def clear():
 def collide(a,b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
+    # a_bb_list = a.get_bb()
+    # b_bb_list = b.get_bb()
+    #
+    # for a in a_bb_list:
+    #     left_a, bottom_a, right_a, top_a = a
+    #     for b1,b2,b3,b4 in b_bb_list:
+    #         print(f"Current b: {b1,b2,b3,b4}")
+    #         left_b, bottom_b, right_b, top_b = [b1,b2,b3,b4]
 
     if left_a > right_b: return False
     if right_a < left_b: return False
