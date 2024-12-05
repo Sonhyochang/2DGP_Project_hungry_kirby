@@ -249,9 +249,10 @@ class Kirby:
                         self.ice_image.clip_composite_draw(int(self.frame) * 30, self.action * 36, 30, 36, 0, 'h',self.x, self.y, 50, 50)
                     elif self.kirby_face_dir == -1:
                         self.ice_image.clip_draw(int(self.frame) * 30, self.action * 36, 30, 36, self.x, self.y, 50, 50)
-
-
-
+                elif self.dir == 1:
+                    self.ice_image.clip_composite_draw(int(self.frame) * 33, self.action * 36 - 36, 33, 36, 0, 'h',self.x, self.y, 50, 50)
+                elif self.dir == -1:
+                    self.ice_image.clip_draw(int(self.frame) * 33, self.action * 36 - 36, 33, 36, self.x, self.y, 50,50)
 
     def get_bb(self):
             return self.x - 27, self.y - 24, self.x + 27, self.y + 24
