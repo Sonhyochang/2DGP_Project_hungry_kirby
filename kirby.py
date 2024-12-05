@@ -58,7 +58,11 @@ class Kirby:
 
     def update(self):
         if self.ice_mode:
-            self.frame = (self.frame + FRAMES_PER_ACTION_ICE_IDLE * ACTION_PER_TIME * kirby_game_framework.frame_time) % 10
+            if self.jump:
+                self.frame = self.frame = (self.frame + FRAMES_PER_ACTION_ICE_JUMP * ACTION_PER_TIME * kirby_game_framework.frame_time) % 12
+            else:
+                self.frame = (self.frame + FRAMES_PER_ACTION_ICE_IDLE * ACTION_PER_TIME * kirby_game_framework.frame_time) % 10
+
         else:
             if self.space_jump:
                   self.frame = (self.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * kirby_game_framework.frame_time) % 6
@@ -253,6 +257,12 @@ class Kirby:
                     self.ice_image.clip_composite_draw(int(self.frame) * 33, self.action * 36 - 36, 33, 36, 0, 'h',self.x, self.y, 50, 50)
                 elif self.dir == -1:
                     self.ice_image.clip_draw(int(self.frame) * 33, self.action * 36 - 36, 33, 36, self.x, self.y, 50,50)
+
+            if self.jump:
+                if self.dir2 == -1:
+                    self.ice_image.clip_draw(int(self.frame) * 33, self.action * 36 - 110, 33, 36, self.x, self.y, 50,50)
+                elif self.dir2 == 1:
+                    self.ice_image.clip_composite_draw(int(self.frame) * 33, self.action * 36 - 110, 33, 36, 0, 'h',self.x, self.y, 50, 50)
 
     def get_bb(self):
             return self.x - 27, self.y - 24, self.x + 27, self.y + 24
