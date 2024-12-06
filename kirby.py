@@ -160,43 +160,19 @@ class Kirby:
                 self.dir2 = 0
 
     def map_up(self):
-        # if not kirby_play_mode.BossMap:
-        #     return
-        if kirby_play_mode.background.kbg_x - 890 < self.x <  kirby_play_mode.background.kbg_x - 752:
-            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
-                self.min_y = 150
-                self.max_y = 275
-                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
-                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
-        elif kirby_play_mode.background.kbg_x - 160 < self.x <  kirby_play_mode.background.kbg_x + 30:
-            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
-                self.min_y = 150
-                self.max_y = 275
-                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
-                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
-        elif kirby_play_mode.background.kbg_x + 25 < self.x <  kirby_play_mode.background.kbg_x + 140:
-            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
-                self.min_y = 230
-                self.max_y = 355
-                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
-                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
-        elif kirby_play_mode.background.kbg_x + 320 < self.x <  kirby_play_mode.background.kbg_x + 780:
-            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
+        if kirby_play_mode.background.kbg_x - 180 < self.x < kirby_play_mode.background.kbg_x + 780:
+            if not self.jump:
+                self.y = 155
+            else:
                 self.min_y = 155
-                self.max_y = 280
-                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
-                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
-        elif kirby_play_mode.background.kbg_x + 780 < self.x <  kirby_play_mode.background.kbg_x + 850:
-            if not self.jump:  # 점프 중이 아닐 때만 y값을 변경
-                self.min_y = 300
-                self.max_y = 425
-                self.y = max(self.y, self.min_y)  # y가 min_y보다 작지 않도록 제한
-                self.y = min(self.y, self.max_y)  # y가 max_y보다 크지 않도록 제한
+                self.max_y = 285
         else:
-            if not self.jump:  # 점프 중이 아닐 때만 y값을 기본값으로 설정
+            if not self.jump:
                 self.y = 125
+            else:
                 self.min_y = 125
                 self.max_y = 250
+
 
     def draw(self):
         draw_rectangle(*self.get_bb())
@@ -285,18 +261,36 @@ class Kirby:
                     else:
                         self.ice_image.clip_composite_draw(int(self.frame) * 33, self.action * 36 - 110, 33, 36, 0, 'h',self.x, self.y, 50, 50)
 
+            if self.vac_mode:
+                if self.dir == 0:
+                    if self.kirby_face_dir == 1:
+                        self.ice_image.clip_composite_draw(int(self.frame) * 110, self.action * 40 - 300, 110, 40, 0, 'h', self.x, self.y, 150, 65)
+                    elif self.kirby_face_dir == -1:
+                        self.ice_image.clip_draw(int(self.frame) * 110, self.action * 40 - 300, 110, 40, self.x, self.y, 150, 65)
+                elif self.dir == 1:
+                    self.vac_mode = False
+                elif self.dir == -1:
+                    self.vac_mode = False
+
     def get_bb(self):
+        if self.ice_mode and self.vac_mode:
+            return self.x - 70, self.y - 24, self.x + 27, self.y + 24
+        else:
             return self.x - 27, self.y - 24, self.x + 27, self.y + 24
 
     def handle_collision(self, group, other):
         if group == 'kirby:map':
-            self.x = 400
-            self.y = 175
-            self.min_y = 175
-            self.max_y = 350
+            # self.x = 400
+            # self.y = 175
+            # self.min_y = 175
+            # self.max_y = 350
+            pass
         elif group == 'kirby:ice':
             if self.vac_mode:
                 self.ice_mode = True
+            elif self.ice_mode:
+                if self.vac_mode:
+                    pass
             else:
                 self.damage_mode = True
                 self.damage_start_time = time.time()

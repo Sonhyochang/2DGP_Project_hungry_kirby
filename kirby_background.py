@@ -43,22 +43,20 @@ class Background_kirby:
         # draw_rectangle(*self.get_bb5())
         # draw_rectangle(*self.get_bb6())
     def update(self):
-        # if self.kbg_x - 890 < self.kirby.x < self.kbg_x - 752:
-        #     self.kirby.y = 150
         pass
 
     def get_bb(self):
         return self.kbg_x - 410, 100, self.kbg_x - 385, 130
-        #return self.kbg_x + 800, 280, self.kbg_x + 830, 320
+        # #return self.kbg_x + 800, 280, self.kbg_x + 830, 320
         # bb = [
-        #     (self.kbg_x - 1000, 0, self.kbg_x - 160, 100),
-        #     (self.kbg_x - 890, 100, self.kbg_x - 752, 130),
-        #     (self.kbg_x - 410, 100, self.kbg_x - 385, 130),
-        #     (self.kbg_x - 160, 100, self.kbg_x + 30, 130),
-        #     (self.kbg_x + 25, 130, self.kbg_x + 140, 215),
-        #     (self.kbg_x + 320, 0, self.kbg_x + 780, 135),
-        #     (self.kbg_x + 780, 130, self.kbg_x + 850, 280)
-        # ]
+        #      (self.kbg_x - 1000, 0, self.kbg_x - 160, 100),
+        #      (self.kbg_x - 890, 100, self.kbg_x - 752, 130),
+        #      (self.kbg_x - 410, 100, self.kbg_x - 385, 130),
+        #      (self.kbg_x - 160, 100, self.kbg_x + 30, 130),
+        #      (self.kbg_x + 25, 130, self.kbg_x + 140, 215),
+        #      (self.kbg_x + 320, 0, self.kbg_x + 780, 135),
+        #      (self.kbg_x + 780, 130, self.kbg_x + 850, 280)
+        #  ]
         # return bb
     # def get_bb1(self):
     #     return self.kbg_x - 890, 100, self.kbg_x - 752, 130
@@ -80,7 +78,7 @@ class Background_kirby:
 
     def handle_collision(self,group,other):
         if group == 'kirby:map':
-            kirby_world.remove_object(self)
+            #kirby_world.remove_object(self)
             pass
 
 
