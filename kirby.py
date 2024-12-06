@@ -7,6 +7,7 @@ import kirby_game_framework
 import kirby_play_mode
 import kirby_world
 from boss_map import BossMap
+import ice_kirby
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 PIXEL_PER_HEIGHT = (74.0 / 2.2)
@@ -26,6 +27,7 @@ FRAMES_PER_ACTION_JUMP = 6
 FRAMES_PER_ACTION_VAC = 5
 FRAMES_PER_ACTION_DAMAGE = 10
 FRAMES_PER_ACTION_ICE_JUMP = 12
+FRAMES_PER_ACTION_ICE_SPACE_JUMP = 9
 FRAMES_PER_ACTION_ICE_IDLE = 10
 
 class Kirby:
@@ -50,6 +52,7 @@ class Kirby:
         self.knockback_speed = 200
         self.knockback_dir = 0
         self.ice_mode = False
+        self.attack_mode = False
 
         self.image = load_image('kirby_animation_sheet2.png')
         self.ice_image = load_image('ice_kirby1.png')
@@ -59,7 +62,10 @@ class Kirby:
     def update(self):
         if self.ice_mode:
             if self.jump:
-                self.frame = self.frame = (self.frame + FRAMES_PER_ACTION_ICE_JUMP * ACTION_PER_TIME * kirby_game_framework.frame_time) % 12
+                if self.space_jump:
+                    self.frame = self.frame = (self.frame + FRAMES_PER_ACTION_ICE_SPACE_JUMP * ACTION_PER_TIME * kirby_game_framework.frame_time) % 9
+                else:
+                    self.frame = self.frame = (self.frame + FRAMES_PER_ACTION_ICE_JUMP * ACTION_PER_TIME * kirby_game_framework.frame_time) % 12
             else:
                 self.frame = (self.frame + FRAMES_PER_ACTION_ICE_IDLE * ACTION_PER_TIME * kirby_game_framework.frame_time) % 10
 
@@ -123,6 +129,7 @@ class Kirby:
                 self.slow_fall = False
             elif event.key == SDLK_e:
                 self.vac_mode = False
+
 
     def move_limit(self):
         if 1024 > self.x > 0:
@@ -260,9 +267,23 @@ class Kirby:
 
             if self.jump:
                 if self.dir2 == -1:
-                    self.ice_image.clip_draw(int(self.frame) * 33, self.action * 36 - 110, 33, 36, self.x, self.y, 50,50)
+                    if self.space_jump:
+                        self.ice_image.clip_draw(int(self.frame) * 40, self.action * 36 - 150, 40, 36, self.x, self.y, 50, 50)
+                    else:
+                        self.ice_image.clip_draw(int(self.frame) * 33, self.action * 36 - 110, 33, 36, self.x, self.y, 50,50)
+                elif self.dir2 == 0:
+                    if self.space_jump:
+                        if self.kirby_face_dir == 1:
+                            self.ice_image.clip_composite_draw(int(self.frame) * 40, self.action * 36 - 150, 40, 36, 0, 'h',self.x, self.y, 50, 50)
+                        elif self.kirby_face_dir == -1:
+                            self.ice_image.clip_draw(int(self.frame) * 40, self.action * 36 - 150, 40, 36, self.x,self.y, 50, 50)
+                    else:
+                        self.ice_image.clip_draw(int(self.frame) * 33, self.action * 36 - 110, 33, 36, self.x, self.y,50, 50)
                 elif self.dir2 == 1:
-                    self.ice_image.clip_composite_draw(int(self.frame) * 33, self.action * 36 - 110, 33, 36, 0, 'h',self.x, self.y, 50, 50)
+                    if self.space_jump:
+                        self.ice_image.clip_composite_draw(int(self.frame) * 40, self.action * 36 - 150, 40, 36, 0, 'h',self.x, self.y, 50, 50)
+                    else:
+                        self.ice_image.clip_composite_draw(int(self.frame) * 33, self.action * 36 - 110, 33, 36, 0, 'h',self.x, self.y, 50, 50)
 
     def get_bb(self):
             return self.x - 27, self.y - 24, self.x + 27, self.y + 24
