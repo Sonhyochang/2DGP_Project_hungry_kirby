@@ -1,12 +1,12 @@
 import time
 
+import ending_mode
 import kirby_game_framework
 
 from pico2d import *
 import random
 
 import kirby_play_mode
-from behavior_tree import BehaviorTree, Action
 
 PIXEL_PER_METER = (10.0 / 0.3)
 RUN_SPEED_KMPH = 10.0  # Km / Hour
@@ -25,7 +25,7 @@ FRAMES_PER_ACTION_ATTACK = 3
 class Boss_Monster:
     IDLE, RUN, ATTACK = 0, 1 ,2
     def __init__(self):
-        self.x, self.y = 1024,290
+        self.x, self.y = 1024,240
         self.action = 3
         self.frame = 0
         self.image = load_image('deded_boss.png')
@@ -35,43 +35,53 @@ class Boss_Monster:
         self.total_frame = {self.IDLE: 4,self.RUN: 3, self.ATTACK: 3}
         self.attack_range = 300
         self.can_attack = True  # 공격 가능 여부
-        self.attack_cooldown = 3.0  # 쿨타임 (초)
+        self.attack_cooldown = 5.0  # 쿨타임 (초)
         self.last_attack_time = 0.0  # 마지막 공격 시간 기록
+        self.boss_hp = 1000
+        self.boss_die = None
+
 
     def update(self):
-        print(f"State: {self.state}, Frame: {self.frame}")
-        current_time = time.time()
+        if self.boss_hp > 0:
+            current_time = time.time()
 
-        distance = math.sqrt((self.x - kirby_play_mode.kirby.x) ** 2 + (self.y - kirby_play_mode.kirby.y) ** 2)
+            distance = math.sqrt((self.x - kirby_play_mode.kirby.x) ** 2 + (self.y - kirby_play_mode.kirby.y) ** 2)
 
-        if distance <= self.attack_range:  # 커비가 범위 안에 있으면
-            if kirby_play_mode.kirby.x < self.x:  # 커비가 왼쪽에 있으면
-                self.dir = -1
-            else:  # 커비가 오른쪽에 있으면
-                self.dir = 1
+            if distance <= self.attack_range:  # 커비가 범위 안에 있으면
+                if kirby_play_mode.kirby.x < self.x:  # 커비가 왼쪽에 있으면
+                    self.dir = -1
+                else:  # 커비가 오른쪽에 있으면
+                    self.dir = 1
 
-            if self.can_attack:
-                self.state = self.ATTACK
-                self.can_attack = False
-                self.last_attack_time = current_time
-            elif current_time - self.last_attack_time >= self.attack_cooldown:
-                self.can_attack = True
+                if self.can_attack:
+                    self.state = self.ATTACK
+                    self.can_attack = False
+                    self.last_attack_time = current_time
+                elif current_time - self.last_attack_time >= self.attack_cooldown:
+                    self.can_attack = True
+            else:
+                self.state = self.IDLE
+
+            if self.state == self.IDLE:
+                self.frame = (self.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * kirby_game_framework.frame_time) % FRAMES_PER_ACTION_IDLE
+                self.idle_behavior()
+            elif self.state == self.RUN:
+                self.frame = (self.frame + FRAMES_PER_ACTION_RUN * ACTION_PER_TIME * kirby_game_framework.frame_time) % FRAMES_PER_ACTION_RUN
+                self.run_behavior()
+            elif self.state == self.ATTACK:
+                self.frame = ( self.frame + FRAMES_PER_ACTION_ATTACK * ACTION_PER_TIME_ATTACK * kirby_game_framework.frame_time) % FRAMES_PER_ACTION_ATTACK
+                self.attack_behavior()
+
+
+            if int(self.frame) == self.total_frame[self.state]:
+                print("Changing state...")
+                self.change_state()
         else:
-            self.state = self.RUN
-
-        if self.state == self.IDLE:
-            self.frame = (self.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * kirby_game_framework.frame_time) % FRAMES_PER_ACTION_IDLE
-            self.idle_behavior()
-        elif self.state == self.RUN:
-            self.frame = (self.frame + FRAMES_PER_ACTION_RUN * ACTION_PER_TIME * kirby_game_framework.frame_time) % FRAMES_PER_ACTION_RUN
-            self.run_behavior()
-        elif self.state == self.ATTACK:
-            self.frame = ( self.frame + FRAMES_PER_ACTION_ATTACK * ACTION_PER_TIME_ATTACK * kirby_game_framework.frame_time) % FRAMES_PER_ACTION_ATTACK
-            self.attack_behavior()
-
-        if int(self.frame) == self.total_frame[self.state]:
-            print("Changing state...")
-            #self.change_state()
+            if self.boss_die is None:
+                self.boss_die = time.time()
+            elif time.time() - self.boss_die >= 5.0:
+                kirby_game_framework.change_mode(ending_mode)
+            self.frame = 0
 
 
     def change_state(self):
@@ -80,7 +90,7 @@ class Boss_Monster:
         elif self.state == self.RUN:
             self.state = self.ATTACK
         elif self.state == self.ATTACK:
-            self.state = self.RUN
+            self.state = self.IDLE
 
         self.frame = 0
     def idle_behavior(self):
@@ -98,37 +108,45 @@ class Boss_Monster:
         pass
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
-        if self.state == self.IDLE:
-            if self.dir > 0:
-                self.image.clip_draw(7 + int(self.frame) * 46, self.action * 58 - 130, 46, 58, self.x, self.y + 30, 300, 300)
-                self.image.clip_draw(8 + int(self.frame) * 57, 25 + self.action * 58,57,58,self.x,self.y,300,300)
-            elif self.dir < 0:
-                self.image.clip_composite_draw(7 + int(self.frame) * 46, self.action * 58 - 130,46,58,0,'h',self.x,self.y + 30, 300,300)
-                self.image.clip_composite_draw(8 + int(self.frame) * 57, 25 + self.action * 58, 57,58,0,'h',self.x,self.y,300,300)
+        #draw_rectangle(*self.get_bb())
+        if self.boss_hp > 0:
+            if self.state == self.IDLE:
+                if self.dir > 0:
+                    self.image.clip_draw(7 + int(self.frame) * 46, self.action * 58 - 130, 46, 58, self.x , self.y + 30, 200, 200)
+                    self.image.clip_draw(8 + int(self.frame) * 57, 25 + self.action * 58,57,58,self.x,self.y,200,200)
+                elif self.dir < 0:
+                    self.image.clip_composite_draw(7 + int(self.frame) * 46, self.action * 58 - 130,46,58,0,'h',self.x,self.y + 30, 200,200)
+                    self.image.clip_composite_draw(8 + int(self.frame) * 57, 25 + self.action * 58, 57,58,0,'h',self.x,self.y,200,200)
 
-        elif self.state == self.ATTACK:
-            if self.dir > 0:
-                self.image.clip_draw(290 + int(self.frame) * 95, self.action * 120 - 350, 95, 120, self.x,self.y,450,450)
-            elif self.dir < 0:
-                self.image.clip_composite_draw(290 + int(self.frame) * 95, self.action * 120 -350, 95, 120,0,'h',self.x,self.y,450,450)
+            elif self.state == self.ATTACK:
+                if self.dir > 0:
+                    self.image.clip_draw(290 + int(self.frame) * 95, self.action * 120 - 350, 95, 120, self.x,self.y,350,350)
+                elif self.dir < 0:
+                    self.image.clip_composite_draw(290 + int(self.frame) * 95, self.action * 120 -350, 95, 120,0,'h',self.x,self.y,350,350)
 
 
-        elif self.state == self.RUN:
-            if self.dir > 0:
-                self.image.clip_draw(7 + int(self.frame) * 46, self.action * 58 - 130, 46, 58, self.x + 10, self.y + 115, 300, 300)
-                self.image.clip_draw(298 + int(self.frame) * 61, 25 + self.action * 58, 61, 58, self.x, self.y, 300, 300)
-            elif self.dir < 0:
-                self.image.clip_composite_draw(7 + int(self.frame) * 46, self.action * 58 - 130, 46, 58, 0, 'h', self.x + 10, self.y + 115, 300, 300)
-                self.image.clip_composite_draw(298 + int(self.frame) * 61, 25 + self.action * 58, 61, 58,0,'h',self.x,self.y,300,300)
-        pass
+            elif self.state == self.RUN:
+                if self.dir > 0:
+                    self.image.clip_draw(7 + int(self.frame) * 46, self.action * 58 - 130, 46, 58, self.x , self.y + 80, 200, 200)
+                    self.image.clip_draw(298 + int(self.frame) * 61, 25 + self.action * 58, 61, 58, self.x, self.y, 200, 200)
+                elif self.dir < 0:
+                    self.image.clip_composite_draw(7 + int(self.frame) * 46, self.action * 58 - 130, 46, 58, 0, 'h', self.x , self.y + 80, 200, 200)
+                    self.image.clip_composite_draw(298 + int(self.frame) * 61, 25 + self.action * 58, 61, 58,0,'h',self.x,self.y,200,200)
+        else:
+            self.image.clip_draw(853 + int(self.frame) * 70, self.action * 70 - 100, 70, 70, self.x, self.y - 10, 200, 200)
 
     def handle_event(self, event):
         pass
 
     def get_bb(self):
-        return self.x - 200, self.y - 200, self.x + 200, self.y + 150
+        if self.state == self.ATTACK:
+            return self.x - 150, self.y - 100, self.x + 150, self.y + 150
+        else:
+            return self.x - 90, self.y - 100, self.x + 90, self.y + 90
 
+    def damage(self):
+        if self.boss_hp > 0:
+            self.boss_hp -= 1
 
     def handle_collision(self, group, other):
         if group == 'kirby:boss':

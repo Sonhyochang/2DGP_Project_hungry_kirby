@@ -6,7 +6,9 @@ import kirby_game_framework
 
 import kirby_play_mode as start_mode
 
+import title_mode
+
 
 open_canvas(1024,768)
-kirby_game_framework.run(start_mode)
+kirby_game_framework.run(title_mode)
 close_canvas()

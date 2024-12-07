@@ -1,10 +1,10 @@
-from pico2d import load_image, draw_rectangle
-
+from pico2d import load_image, draw_rectangle, load_music
 
 import kirby_game_framework
 import kirby_play_mode
 import kirby_world
 from boss_map import BossMap
+from boss_monster import Boss_Monster
 from kirby_game_framework import change_mode
 
 PIXEL_PER_METER = (10.0 / 0.3)
@@ -19,6 +19,11 @@ class Background_kirby:
         self.kirby = kirby
         self.image_map = load_image('level1-1.png')
         self.image = load_image('kirby_background_stage1.png')
+        self.bgm = load_music('04. Prism Plains.mp3')
+        self.bgm.set_volume(32)
+        self.bgm.repeat_play()
+        self.boss_map = None
+        self.boss = None
 
     def draw(self):
         self.image.draw(self.kbg_x, 384, 2000, 768)
@@ -35,7 +40,7 @@ class Background_kirby:
             elif self.kbg_x >= 1000:
                 self.kbg_x = 1000
         self.image_map.draw(self.kbg_x, 180, 3000, 384)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
         # draw_rectangle(*self.get_bb1())
         # draw_rectangle(*self.get_bb2())
         # draw_rectangle(*self.get_bb3())
@@ -46,7 +51,7 @@ class Background_kirby:
         pass
 
     def get_bb(self):
-        return self.kbg_x - 410, 100, self.kbg_x - 385, 130
+        return self.kbg_x + 800, 280, self.kbg_x + 820, 330
         # #return self.kbg_x + 800, 280, self.kbg_x + 830, 320
         # bb = [
         #      (self.kbg_x - 1000, 0, self.kbg_x - 160, 100),
@@ -76,9 +81,30 @@ class Background_kirby:
     # def get_bb6(self):
     #     return self.kbg_x + 780, 130, self.kbg_x + 850, 280
 
+    # def create_boss(self):
+    #     self.boss_map = BossMap()
+    #     self.boss = Boss_Monster()
+    #     kirby_world.add_object(self.boss_map, 0)
+    #     kirby_world.add_object(self.boss, 1)
+    #     kirby_world.add_collision_pair('kirby:boss', 0, self.boss)
+    #
+    # def delete_boss(self):
+    #     if self.boss:
+    #         kirby_world.remove_object(self.boss)  # 보스 객체 제거
+    #         self.boss = None
+    #     if self.boss_map:
+    #         kirby_world.remove_object(self.boss_map)  # 보스 맵 객체 제거
+    #         self.boss_map = None
+
     def handle_collision(self,group,other):
         if group == 'kirby:map':
-            #kirby_world.remove_object(self)
+            self.bgm.stop()
+            boss_map = BossMap()
+            boss = Boss_Monster()
+            kirby_world.add_object(boss_map,0)
+            kirby_world.add_object(boss,1)
+            kirby_world.add_collision_pair('kirby:boss',0,boss)
+            kirby_world.remove_object(self)
             pass
 
 

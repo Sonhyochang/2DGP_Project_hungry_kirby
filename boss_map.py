@@ -18,8 +18,12 @@ class BossMap:
             self.frame = 0
             self.action= 2
             self.image = load_image('dedede_area.png')
+            self.bgm = load_music('09. King Dedede.mp3')
+            self.bgm.set_volume(32)
+            self.bgm.repeat_play()
 
         def draw(self):
+            #draw_rectangle(*self.get_bb())
             self.image.clip_draw(int(self.frame) * 256, self.action * 205,256,205,self.x,self.y,1024,768)
 
         def update(self):
@@ -27,7 +31,7 @@ class BossMap:
 
 
         def get_bb(self):
-            pass
+            return self.x - 200, self.y - 150, self.x + 200, self.y + 205
 
         def handle_collision(self, group, other):
             pass
