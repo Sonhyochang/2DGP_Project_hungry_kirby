@@ -2,9 +2,7 @@ import kirby_background
 import kirby_game_framework
 
 from pico2d import *
-import time
 
-import kirby_play_mode
 import kirby_world
 
 PIXEL_PER_METER = (10.0 / 0.3)
@@ -26,33 +24,13 @@ class Ice_Monster:
         self.x = x_start
         self.action = 3
         self.frame = 0
-        self.image = load_image('ice_monster.png')
+        self.image = load_image('Resource\\ice_monster.png')
         self.dir = 1
 
     def update(self):
         self.action = 3
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * kirby_game_framework.frame_time) % FRAMES_PER_ACTION
         self.x += (RUN_SPEED_PPS / 2) * self.dir * kirby_game_framework.frame_time
-        # 1번째 몬스터
-        # if self.x > self.background.kbg_x - 180:
-        #     self.dir = -1
-        # elif self.x < self.background.kbg_x - 370:
-        #     self.dir = 1
-        # self.x = clamp(self.background.kbg_x - 370 ,self.x, self.background.kbg_x - 180)
-
-        # 2번쨰 몬스터
-        # if self.x > self.background.kbg_x + 90:
-        #     self.dir = -1
-        # elif self.x < self.background.kbg_x - 100:
-        #     self.dir = 1
-        # self.x = clamp(self.background.kbg_x - 100 ,self.x, self.background.kbg_x + 90)
-
-        # 3번째 몬스터
-        # if self.x > self.background.kbg_x + 750:
-        #     self.dir = -1
-        # elif self.x < self.background.kbg_x + 560:
-        #     self.dir = 1
-        # self.x = clamp(self.background.kbg_x + 560 ,self.x, self.background.kbg_x + 750)
 
         if self.x > self.x_end:
             self.dir = -1

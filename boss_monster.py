@@ -4,7 +4,6 @@ import ending_mode
 import kirby_game_framework
 
 from pico2d import *
-import random
 
 import kirby_play_mode
 
@@ -28,7 +27,7 @@ class Boss_Monster:
         self.x, self.y = 1024,240
         self.action = 3
         self.frame = 0
-        self.image = load_image('deded_boss.png')
+        self.image = load_image('Resource\\deded_boss.png')
         self.dir = 1
         self.state = self.IDLE
         self.tx, self.ty = 0, 0
@@ -74,12 +73,11 @@ class Boss_Monster:
 
 
             if int(self.frame) == self.total_frame[self.state]:
-                print("Changing state...")
                 self.change_state()
         else:
             if self.boss_die is None:
                 self.boss_die = time.time()
-                self.bgm = load_music('06. Kirby Dance (Short).mp3')
+                self.bgm = load_music('Resource\\06. Kirby Dance (Short).mp3')
                 self.bgm.set_volume(32)
                 self.bgm.play()
             elif time.time() - self.boss_die >= 5.0:

@@ -17,8 +17,8 @@ class BossMap:
             self.x, self.y = 512, 384
             self.frame = 0
             self.action= 2
-            self.image = load_image('dedede_area.png')
-            self.bgm = load_music('09. King Dedede.mp3')
+            self.image = load_image('Resource\\dedede_area.png')
+            self.bgm = load_music('Resource\\09. King Dedede.mp3')
             self.bgm.set_volume(32)
             self.bgm.repeat_play()
 

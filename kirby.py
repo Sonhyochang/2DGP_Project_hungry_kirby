@@ -2,13 +2,10 @@ import time
 from pico2d import load_image, get_time, draw_rectangle, load_wav, load_music, clear_canvas
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_SPACE, SDL_KEYUP, SDLK_e
 
-import ice_monster
 import kirby_game_framework
 import kirby_play_mode
-import kirby_world
 import title_mode
-from kirby_background import Background_kirby
-from boss_map import BossMap
+
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 PIXEL_PER_HEIGHT = (74.0 / 2.2)
@@ -70,29 +67,29 @@ class Kirby:
         self.die_sound_playing = False
         self.last_damage_time = 0
         self.damage_cooldown = 10
-        self.bgm = load_music('06. Kirby Dance (Short).mp3')
+        self.bgm = load_music('Resource\\06. Kirby Dance (Short).mp3')
         self.bgm.set_volume(32)
 
 
-        self.image = load_image('kirby_animation_sheet2.png')
-        self.ice_image = load_image('ice_kirby1.png')
-        self.life_image = load_image('kirby_life.png')
-        self.ice_hud_image = load_image('ice_mode_hud.png')
+        self.image = load_image('Resource\\kirby_animation_sheet2.png')
+        self.ice_image = load_image('Resource\\ice_kirby1.png')
+        self.life_image = load_image('Resource\\kirby_life.png')
+        self.ice_hud_image = load_image('Resource\\ice_mode_hud.png')
 
-        self.bgm = load_music('26. Hit!.mp3')
+        self.bgm = load_music('Resource\\26. Hit!.mp3')
         self.bgm.set_volume(32)
 
         if not Kirby.vac_sound:
-            Kirby.vac_sound = load_wav('vac.wav')
+            Kirby.vac_sound = load_wav('Resource\\vac.wav')
             Kirby.vac_sound.set_volume(16)
         if not Kirby.change_sound:
-            Kirby.change_sound = load_wav('cahnge_ice_kirby.wav')
+            Kirby.change_sound = load_wav('Resource\\cahnge_ice_kirby.wav')
             Kirby.change_sound.set_volume(16)
         if not Kirby.die_monster_sound:
-            Kirby.die_monster_sound = load_wav('die_monster.wav')
+            Kirby.die_monster_sound = load_wav('Resource\\die_monster.wav')
             Kirby.die_monster_sound.set_volume(16)
         if not Kirby.jump_sound:
-            Kirby.jump_sound = load_wav('jump.wav')
+            Kirby.jump_sound = load_wav('Resource\\jump.wav')
             Kirby.jump_sound.set_volume(16)
 
 
@@ -150,7 +147,6 @@ class Kirby:
             else:
                 self.frame = (self.frame + FRAMES_PER_ACTION_BASE * ACTION_PER_TIME * kirby_game_framework.frame_time) % 9
 
-        #self.frame = 3
         self.move_limit()
         self.jump_logic()
         if self.map:
@@ -195,8 +191,6 @@ class Kirby:
                 self.dir = 0
             elif event.key == SDLK_LEFT:
                 self.dir = 0
-            # elif event.key == SDLK_UP:
-            #     self.dir2 = 0
             elif event.key == SDLK_SPACE:
                 self.space_jump = False
                 self.slow_fall = False
@@ -405,9 +399,6 @@ class Kirby:
         elif group == 'kirby:boss':
             if self.ice_mode:
                 if hasattr(other,'boss_hp') and other.boss_hp <= 0:
-                    # self.bgm = load_music('06. Kirby Dance (Short).mp3')
-                    # self.bgm.set_volume(32)
-                    # self.bgm.play()
                     pass
                 else:
                     if self.vac_mode:

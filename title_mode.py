@@ -7,25 +7,16 @@ from pico2d import load_image, delay, clear_canvas, update_canvas, get_events, g
 def init():
     global image
     global bgm
-    # global running
-    # global title_start_time
 
-    image = load_image('kirby_title.png')
-    bgm = load_music('01. Ttile Screen.mp3')
+    image = load_image('Resource\\kirby_title.png')
+    bgm = load_music('Resource\\01. Ttile Screen.mp3')
     bgm.set_volume(32)
     bgm.repeat_play()
-    # running = True
-    # title_start_time = get_time()
 
 def finish():
     global image
-    # del image
 
 def update():
-    # global title_start_time
-    # if get_time() - title_start_time >= 2.0:
-    #     title_start_time = get_time()
-    #     kirby_game_framework.change_mode(kirby_play_mode)
     pass
 
 def draw():
