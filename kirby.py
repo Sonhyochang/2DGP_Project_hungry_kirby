@@ -108,8 +108,7 @@ class Kirby:
             music_time = 3
             time.sleep(music_time)
             self.die_sound_playing = False
-            kirby_play_mode.finish()
-            kirby_game_framework.change_mode(title_mode)
+            kirby_game_framework.quit()
 
 
         if self.ice_mode:
