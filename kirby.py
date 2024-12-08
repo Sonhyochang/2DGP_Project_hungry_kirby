@@ -405,9 +405,9 @@ class Kirby:
         elif group == 'kirby:boss':
             if self.ice_mode:
                 if hasattr(other,'boss_hp') and other.boss_hp <= 0:
-                    self.bgm = load_music('06. Kirby Dance (Short).mp3')
-                    self.bgm.set_volume(32)
-                    self.bgm.play()
+                    # self.bgm = load_music('06. Kirby Dance (Short).mp3')
+                    # self.bgm.set_volume(32)
+                    # self.bgm.play()
                     pass
                 else:
                     if self.vac_mode:

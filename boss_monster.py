@@ -79,6 +79,9 @@ class Boss_Monster:
         else:
             if self.boss_die is None:
                 self.boss_die = time.time()
+                self.bgm = load_music('06. Kirby Dance (Short).mp3')
+                self.bgm.set_volume(32)
+                self.bgm.play()
             elif time.time() - self.boss_die >= 5.0:
                 kirby_game_framework.change_mode(ending_mode)
             self.frame = 0
